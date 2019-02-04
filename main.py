@@ -41,6 +41,9 @@ class SlideshowController(FloatLayout):
         self.init_time()
 
     def next(self):
+        if not self.isStart:
+            return
+
         self.label_current_num_wid.text = str(int(self.label_current_num_wid.text) + 1)
         if(int(self.label_current_num_wid.text) > int(self.input_repeat_wid.text)):
             self.end()
