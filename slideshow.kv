@@ -13,6 +13,7 @@
         Image:
             id: image_source
             source: './resources/imgs/black.png'
+            on_touch_down: root.next()
 
         BoxLayout:
             orientation: 'horizontal'
@@ -45,9 +46,7 @@
             Button:
                 text: "Start"
                 on_press: root.start()
-
-            Button:
-                text: "End"
+                size_hint: (.5, 1)
 
             Label:
                 id: label_current_time
