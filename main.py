@@ -23,9 +23,11 @@ class SlideshowController(FloatLayout):
     input_repeat_wid = ObjectProperty(None)
     label_current_time_wid = ObjectProperty(None)
     label_current_num_wid = ObjectProperty(None)
+    button_stop_wid = ObjectProperty(None)
     event = ""
 
     isStart = False
+    isStop = False
 
     def callback(self, dt):
         self.count_down()
@@ -49,12 +51,12 @@ class SlideshowController(FloatLayout):
             self.end()
             return
 
+        self.isStop = False
+        self.button_stop_wid.text = "Stop"
         self.event.cancel()
         self.event()
         self.change_image()
         self.init_time()
-
-        pass
 
     def count_down(self):
         self.label_current_time_wid.text = str(int(self.label_current_time_wid.text) - 1)
@@ -80,6 +82,19 @@ class SlideshowController(FloatLayout):
         self.update_widget_state()
         Logger.info("State:start")
 
+    def stop(self):
+        if not self.isStart:
+            return
+
+        if self.isStop:
+            self.event()
+            self.isStop = False
+            self.button_stop_wid.text = "Stop"
+        else:
+            self.button_stop_wid.text = "Resume"
+            self.event.cancel()
+            self.isStop = True
+
     def end(self):
         self.image_wid.source = "./resources/imgs/black.png"
         self.label_current_num_wid.text = "0"
@@ -87,6 +102,8 @@ class SlideshowController(FloatLayout):
         self.event.cancel()
 
         self.isStart = False
+        self.isStop = False
+        self.button_stop_wid.text = "Stop"
         self.input_wid.readonly = False
         self.input_interval_wid.readonly = False
         self.input_repeat_wid.readonly = False
