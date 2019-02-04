@@ -1,0 +1,45 @@
+<SlideshowController>:
+    image_wid: image_source
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+
+        Image:
+            id: image_source
+            source: 'images/2015_09_29_original004.JPG'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, .1)
+
+            Button:
+                text: "Open"
+                on_press: root.show_load()
+
+            Button:
+                text: "Start"
+                on_press: root.start()
+
+            Button:
+                text: "End"
+
+
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserIconView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
