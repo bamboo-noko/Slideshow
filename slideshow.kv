@@ -5,6 +5,7 @@
     input_repeat_wid : input_repeat
     label_current_time_wid : label_current_time
     label_current_num_wid : label_current_num
+    button_stop_wid: button_stop
 
     BoxLayout:
         orientation: 'vertical'
@@ -46,7 +47,13 @@
             Button:
                 text: "Start"
                 on_press: root.start()
-                size_hint: (.5, 1)
+                size_hint: (.8, 1)
+
+            Button:
+                id: button_stop
+                text: "Stop"
+                on_press: root.stop()
+                size_hint: (.8, 1)
 
             Label:
                 id: label_current_time
