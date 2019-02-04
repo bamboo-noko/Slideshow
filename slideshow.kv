@@ -1,5 +1,10 @@
 <SlideshowController>:
     image_wid: image_source
+    input_wid: dir_name
+    input_interval_wid : input_interval
+    input_repeat_wid : input_repeat
+    label_current_time_wid : label_current_time
+    label_current_num_wid : label_current_num
 
     BoxLayout:
         orientation: 'vertical'
@@ -7,15 +12,35 @@
 
         Image:
             id: image_source
-            source: 'images/2015_09_29_original004.JPG'
+            source: './resources/imgs/black.png'
 
         BoxLayout:
             orientation: 'horizontal'
-            size_hint: (1, .1)
+            size_hint: (1, .06)
 
-            Button:
-                text: "Open"
-                on_press: root.show_load()
+            Label:
+                text: "Directory:"
+
+            TextInput:
+                id: dir_name
+                multiline: False
+                write_tab: False
+
+            Label:
+                text: "Interval:"
+
+            TextInput:
+                id: input_interval
+                multiline: False
+                write_tab: False
+
+            Label:
+                text: "Repeat:"
+
+            TextInput:
+                id: input_repeat
+                multiline: False
+                write_tab: False
 
             Button:
                 text: "Start"
@@ -24,22 +49,10 @@
             Button:
                 text: "End"
 
+            Label:
+                id: label_current_time
+                text: "0"
 
-<LoadDialog>:
-    BoxLayout:
-        size: root.size
-        pos: root.pos
-        orientation: "vertical"
-        FileChooserIconView:
-            id: filechooser
-
-        BoxLayout:
-            size_hint_y: None
-            height: 30
-            Button:
-                text: "Cancel"
-                on_release: root.cancel()
-
-            Button:
-                text: "Load"
-                on_release: root.load(filechooser.path, filechooser.selection)
+            Label:
+                id: label_current_num
+                text: "0"
