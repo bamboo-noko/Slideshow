@@ -46,6 +46,8 @@ class SlideshowController(FloatLayout):
             self.end()
             return
 
+        self.event.cancel()
+        self.event()
         self.change_image()
         self.init_time()
 
@@ -106,6 +108,9 @@ class SlideshowController(FloatLayout):
             return False
 
         if (int(self.input_repeat_wid.text) <= 0):
+            return False
+
+        if self.isStart:
             return False
 
         return True
