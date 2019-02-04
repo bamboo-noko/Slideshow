@@ -15,6 +15,7 @@ from os.path import join, dirname
 
 
 class SlideshowController(FloatLayout):
+    
     load_dir = ""
     files = []
     image_wid = ObjectProperty(None)
@@ -34,39 +35,13 @@ class SlideshowController(FloatLayout):
         if (int(self.label_current_time_wid.text) is not 0):
             return
 
-        self.label_current_num_wid.text = str(int(self.label_current_num_wid.text) + 1)
-        if(int(self.label_current_num_wid.text) > int(self.input_repeat_wid.text)):
+        self.calc_num()
+        if not self.is_next():
             self.end()
             return
 
         self.change_image()
         self.init_time()
-
-    def next(self):
-        if not self.isStart:
-            return
-
-        self.label_current_num_wid.text = str(int(self.label_current_num_wid.text) + 1)
-        if(int(self.label_current_num_wid.text) > int(self.input_repeat_wid.text)):
-            self.end()
-            return
-
-        self.isStop = False
-        self.button_stop_wid.text = "Stop"
-        self.event.cancel()
-        self.event()
-        self.change_image()
-        self.init_time()
-
-    def count_down(self):
-        self.label_current_time_wid.text = str(int(self.label_current_time_wid.text) - 1)
-    
-    def init_time(self):
-        self.label_current_time_wid.text = self.input_interval_wid.text
-
-    def change_image(self):
-        self.image_wid.source = self.files[randint(0, len(self.files)-1)]
-        self.image_wid.reload()
 
     def start(self):
         if not self.validation_check():
@@ -78,9 +53,49 @@ class SlideshowController(FloatLayout):
         self.init_time()
         self.label_current_num_wid.text = "1"
         self.event = Clock.schedule_interval(self.callback, 1)
-
         self.update_widget_state()
-        Logger.info("State:start")
+
+    def count_down(self):
+        self.label_current_time_wid.text = str(int(self.label_current_time_wid.text) - 1)
+
+    def calc_num(self):
+        self.label_current_num_wid.text = str(int(self.label_current_num_wid.text) + 1)
+
+    def is_next(self):
+        return int(self.label_current_num_wid.text) <= int(self.input_repeat_wid.text)
+
+    def end(self):
+        self.image_wid.source = "./resources/imgs/black.png"
+        self.label_current_num_wid.text = "0"
+        self.label_current_time_wid.text = "0"
+        self.event.cancel()
+
+        self.isStart = False
+        self.isStop = False
+        self.update_widget_state()
+
+    def change_image(self):
+        self.image_wid.source = self.files[randint(0, len(self.files)-1)]
+        self.image_wid.reload()
+    
+    def init_time(self):
+        self.label_current_time_wid.text = self.input_interval_wid.text
+
+    def next(self):
+        if not self.isStart:
+            return
+
+        self.calc_num()
+        if not self.is_next():
+            self.end()
+            return
+
+        self.isStop = False
+        self.button_stop_wid.text = "Stop"
+        self.event.cancel()
+        self.event()
+        self.change_image()
+        self.init_time()
 
     def stop(self):
         if not self.isStart:
@@ -91,25 +106,9 @@ class SlideshowController(FloatLayout):
             self.isStop = False
             self.button_stop_wid.text = "Stop"
         else:
-            self.button_stop_wid.text = "Resume"
             self.event.cancel()
             self.isStop = True
-
-    def end(self):
-        self.image_wid.source = "./resources/imgs/black.png"
-        self.label_current_num_wid.text = "0"
-        self.label_current_time_wid.text = "0"
-        self.event.cancel()
-
-        self.isStart = False
-        self.isStop = False
-        self.button_stop_wid.text = "Stop"
-        self.input_wid.readonly = False
-        self.input_interval_wid.readonly = False
-        self.input_repeat_wid.readonly = False
-        self.update_widget_state()
-        
-        Logger.info("State:end")
+            self.button_stop_wid.text = "Resume"
 
     def validation_check(self):
         if not (os.path.exists(self.input_wid.text)):
@@ -140,6 +139,12 @@ class SlideshowController(FloatLayout):
             self.input_wid.readonly = True
             self.input_interval_wid.readonly = True
             self.input_repeat_wid.readonly = True
+
+        else:
+            self.button_stop_wid.text = "Stop"
+            self.input_wid.readonly = False
+            self.input_interval_wid.readonly = False
+            self.input_repeat_wid.readonly = False
 
 
 class SlideshowApp(App):
