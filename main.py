@@ -5,7 +5,7 @@ from kivy.logger import Logger
 from kivy.uix.image import Image
 from kivy.clock import Clock
 from kivy.uix.floatlayout import FloatLayout
-from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
+from kivy.properties import ObjectProperty
 from kivy.core.window import Window
 
 import os
@@ -15,7 +15,7 @@ from os.path import join, dirname
 
 
 class SlideshowController(FloatLayout):
-    
+
     load_dir = ""
     files = []
     image_wid = ObjectProperty(None)
@@ -47,22 +47,41 @@ class SlideshowController(FloatLayout):
         if not self.validation_check():
             return
 
+        files = glob(join(self.input_wid.text, '*'))
+        self.files = list(filter(self.check_ext, files))
+        if len(self.files) <= 0:
+            return
+
         self.isStart = True
-        self.files = glob(join(self.input_wid.text, '*'))
         self.change_image()
         self.init_time()
         self.label_current_num_wid.text = "1"
         self.event = Clock.schedule_interval(self.callback, 1)
         self.update_widget_state()
 
+    def check_ext(self, x: str) -> bool:
+        if os.path.splitext(x)[1] == ".png":
+            return True
+        if os.path.splitext(x)[1] == ".jpg":
+            return True
+        if os.path.splitext(x)[1] == ".gif":
+            return True
+        if os.path.splitext(x)[1] == ".bmp":
+            return True
+
+        return False
+
     def count_down(self):
-        self.label_current_time_wid.text = str(int(self.label_current_time_wid.text) - 1)
+        self.label_current_time_wid.text = \
+            str(int(self.label_current_time_wid.text) - 1)
 
     def calc_num(self):
-        self.label_current_num_wid.text = str(int(self.label_current_num_wid.text) + 1)
+        self.label_current_num_wid.text = \
+            str(int(self.label_current_num_wid.text) + 1)
 
     def is_next(self):
-        return int(self.label_current_num_wid.text) <= int(self.input_repeat_wid.text)
+        return int(self.label_current_num_wid.text) <= \
+            int(self.input_repeat_wid.text)
 
     def end(self):
         self.image_wid.source = "./resources/imgs/black.png"
@@ -77,7 +96,7 @@ class SlideshowController(FloatLayout):
     def change_image(self):
         self.image_wid.source = self.files[randint(0, len(self.files)-1)]
         self.image_wid.reload()
-    
+
     def init_time(self):
         self.label_current_time_wid.text = self.input_interval_wid.text
 
@@ -135,7 +154,7 @@ class SlideshowController(FloatLayout):
         return True
 
     def update_widget_state(self):
-        if self.isStart :
+        if self.isStart:
             self.input_wid.readonly = True
             self.input_interval_wid.readonly = True
             self.input_repeat_wid.readonly = True
