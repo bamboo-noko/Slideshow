@@ -1,0 +1,57 @@
+<SlideshowController>:
+    image_wid: image_source
+    input_wid: dir_name
+    input_interval_wid : input_interval
+    input_repeat_wid : input_repeat
+    label_current_time_wid : label_current_time
+    label_current_num_wid : label_current_num
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+
+        Image:
+            id: image_source
+            source: './resources/imgs/black.png'
+            on_touch_down: root.next()
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, .06)
+
+            Label:
+                text: "Directory:"
+
+            TextInput:
+                id: dir_name
+                multiline: False
+                write_tab: False
+
+            Label:
+                text: "Interval:"
+
+            TextInput:
+                id: input_interval
+                multiline: False
+                write_tab: False
+
+            Label:
+                text: "Repeat:"
+
+            TextInput:
+                id: input_repeat
+                multiline: False
+                write_tab: False
+
+            Button:
+                text: "Start"
+                on_press: root.start()
+                size_hint: (.5, 1)
+
+            Label:
+                id: label_current_time
+                text: "0"
+
+            Label:
+                id: label_current_num
+                text: "0"
