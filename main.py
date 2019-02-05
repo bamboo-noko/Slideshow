@@ -3,33 +3,41 @@ import kivy
 from kivy.app import App
 from kivy.logger import Logger
 from kivy.uix.image import Image
+from kivy.uix.button import Button
 from kivy.clock import Clock
 from kivy.uix.floatlayout import FloatLayout
-from kivy.properties import ObjectProperty
-from kivy.core.window import Window
-
+from kivy.properties import ObjectProperty, NumericProperty
 import os
 import random
 from glob import glob
 from os.path import join, dirname
 
+class RotatedImage(Image):
+    angle = NumericProperty(0)
 
 class SlideshowController(FloatLayout):
 
     load_dir = ""
     files = []
-    image_wid = ObjectProperty(None)
     input_wid = ObjectProperty(None)
     input_interval_wid = ObjectProperty(None)
     input_repeat_wid = ObjectProperty(None)
     label_current_time_wid = ObjectProperty(None)
     label_current_num_wid = ObjectProperty(None)
     button_stop_wid = ObjectProperty(None)
-    event = ""
+    box_layout_wid = ObjectProperty(None)
+    checkbox_flip_wid = ObjectProperty(None)
+    rotated_image = ""
+    clock_event = ""
 
     isStart = False
     isStop = False
     index = 0
+
+    def __init__(self, **kwargs):
+        super(SlideshowController, self).__init__(**kwargs)
+        self.rotated_image = RotatedImage(source="./resources/imgs/black.png")
+        self.box_layout_wid.add_widget(self.rotated_image)
 
     def callback(self, dt):
         self.count_down()
@@ -58,7 +66,7 @@ class SlideshowController(FloatLayout):
         self.change_image()
         self.init_time()
         self.label_current_num_wid.text = "1"
-        self.event = Clock.schedule_interval(self.callback, 1)
+        self.clock_event = Clock.schedule_interval(self.callback, 1)
         self.update_widget_state()
 
     def check_ext(self, x: str) -> bool:
@@ -86,18 +94,22 @@ class SlideshowController(FloatLayout):
             int(self.input_repeat_wid.text)
 
     def end(self):
-        self.image_wid.source = "./resources/imgs/black.png"
+        self.rotated_image.source = "./resources/imgs/black.png"
         self.label_current_num_wid.text = "0"
         self.label_current_time_wid.text = "0"
-        self.event.cancel()
+        self.clock_event.cancel()
+        self.rotated_image.angle = 0
 
         self.isStart = False
         self.isStop = False
         self.update_widget_state()
 
     def change_image(self):
-        self.image_wid.source = self.files[self.index]
-        self.image_wid.reload()
+        if self.checkbox_flip_wid.active :
+            self.rotated_image.angle = 0 if random.randint(0, 1) == 0 else 180
+
+        self.rotated_image.source = self.files[self.index]
+        self.rotated_image.reload()
         self.index += 1
         if self.index > len(self.files) - 1:
             self.index = 0
@@ -116,8 +128,8 @@ class SlideshowController(FloatLayout):
 
         self.isStop = False
         self.button_stop_wid.text = "Stop"
-        self.event.cancel()
-        self.event()
+        self.clock_event.cancel()
+        self.clock_event()
         self.change_image()
         self.init_time()
 
@@ -126,11 +138,11 @@ class SlideshowController(FloatLayout):
             return
 
         if self.isStop:
-            self.event()
+            self.clock_event()
             self.isStop = False
             self.button_stop_wid.text = "Stop"
         else:
-            self.event.cancel()
+            self.clock_event.cancel()
             self.isStop = True
             self.button_stop_wid.text = "Resume"
 
@@ -160,21 +172,24 @@ class SlideshowController(FloatLayout):
 
     def update_widget_state(self):
         if self.isStart:
-            self.input_wid.readonly = True
-            self.input_interval_wid.readonly = True
-            self.input_repeat_wid.readonly = True
+            self.input_wid.disabled = True
+            self.input_interval_wid.disabled = True
+            self.input_repeat_wid.disabled = True
+            self.checkbox_flip_wid.disabled = True
 
         else:
             self.button_stop_wid.text = "Stop"
-            self.input_wid.readonly = False
-            self.input_interval_wid.readonly = False
-            self.input_repeat_wid.readonly = False
-
+            self.input_wid.disabled = False
+            self.input_interval_wid.disabled = False
+            self.input_repeat_wid.disabled = False
+            self.checkbox_flip_wid.disabled = False
 
 class SlideshowApp(App):
 
     def build(self):
+        root = self.root
         return SlideshowController()
+        
 
 
 if __name__ == '__main__':
