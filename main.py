@@ -9,7 +9,7 @@ from kivy.properties import ObjectProperty
 from kivy.core.window import Window
 
 import os
-from random import randint
+import random
 from glob import glob
 from os.path import join, dirname
 
@@ -29,6 +29,7 @@ class SlideshowController(FloatLayout):
 
     isStart = False
     isStop = False
+    index = 0
 
     def callback(self, dt):
         self.count_down()
@@ -52,6 +53,7 @@ class SlideshowController(FloatLayout):
         if len(self.files) <= 0:
             return
 
+        random.shuffle(self.files)
         self.isStart = True
         self.change_image()
         self.init_time()
@@ -94,8 +96,11 @@ class SlideshowController(FloatLayout):
         self.update_widget_state()
 
     def change_image(self):
-        self.image_wid.source = self.files[randint(0, len(self.files)-1)]
+        self.image_wid.source = self.files[self.index]
         self.image_wid.reload()
+        self.index += 1
+        if self.index > len(self.files) - 1:
+            self.index = 0
 
     def init_time(self):
         self.label_current_time_wid.text = self.input_interval_wid.text
