@@ -9,6 +9,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty, NumericProperty
 import os
 import random
+import configparser
 from glob import glob
 from os.path import join, dirname
 
@@ -38,6 +39,11 @@ class SlideshowController(FloatLayout):
         super(SlideshowController, self).__init__(**kwargs)
         self.rotated_image = RotatedImage(source="./resources/imgs/black.png")
         self.box_layout_wid.add_widget(self.rotated_image)
+        inifile = configparser.ConfigParser()
+        inifile.read("./config.ini", "UTF-8")
+        self.input_wid.text = inifile.get("settings", "dir")
+        self.input_interval_wid.text = inifile.get("settings", "interval")
+        self.input_repeat_wid.text = inifile.get("settings", "repeat")
 
     def callback(self, dt):
         self.count_down()
