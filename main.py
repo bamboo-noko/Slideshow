@@ -6,12 +6,18 @@ from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.clock import Clock
 from kivy.uix.floatlayout import FloatLayout
+from kivy.factory import Factory
+from kivy.uix.popup import Popup
 from kivy.properties import ObjectProperty, NumericProperty
 import os
 import random
 import configparser
 from glob import glob
 from os.path import join, dirname
+
+class LoadDialog(FloatLayout):
+    load = ObjectProperty(None)
+    cancel = ObjectProperty(None)
 
 class RotatedImage(Image):
     angle = NumericProperty(0)
@@ -39,11 +45,24 @@ class SlideshowController(FloatLayout):
         super(SlideshowController, self).__init__(**kwargs)
         self.rotated_image = RotatedImage(source="./resources/imgs/black.png")
         self.box_layout_wid.add_widget(self.rotated_image)
-        inifile = configparser.ConfigParser()
-        inifile.read("./config.ini", "UTF-8")
-        self.input_wid.text = inifile.get("settings", "dir")
-        self.input_interval_wid.text = inifile.get("settings", "interval")
-        self.input_repeat_wid.text = inifile.get("settings", "repeat")
+        # inifile = configparser.ConfigParser()
+        # inifile.read("./config.ini", "UTF-8")
+        # # self.input_wid.text = inifile.get("settings", "dir")
+        # # self.input_interval_wid.text = inifile.get("settings", "interval")
+        # # self.input_repeat_wid.text = inifile.get("settings", "repeat")
+
+    def dismiss_popup(self):
+        self._popup.dismiss()
+
+    def show_load(self):
+        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        self._popup = Popup(title="Load file", content=content,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+
+    def load(self, path, filename):
+        self.input_wid.text = path
+        self.dismiss_popup()
 
     def callback(self, dt):
         self.count_down()
@@ -190,13 +209,14 @@ class SlideshowController(FloatLayout):
             self.input_repeat_wid.disabled = False
             self.checkbox_flip_wid.disabled = False
 
+
 class SlideshowApp(App):
 
     def build(self):
         root = self.root
         return SlideshowController()
-        
 
+Factory.register('LoadDialog', cls=LoadDialog)
 
 if __name__ == '__main__':
     SlideshowApp().run()
