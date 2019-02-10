@@ -1,2 +1,3 @@
 # Slideshow
-practice of painting
+- practice of painting
+- This program uses kivy.
